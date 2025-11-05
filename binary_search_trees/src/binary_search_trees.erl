@@ -86,21 +86,8 @@ add({E, Left, Right}, Value) when Value < E ->
     {E, add(Left, Value), Right};
 add({E, Left, Right}, Value) when Value > E ->
     {E, Left, add(Right, Value)};
-add({E, _, _}, Value) when Value == E ->
-    {value_already_exists, Value}.
-
-% Example
-% 1> T1 = binary_search_trees:add(nil, 10).
-% {10,nil,nil}
-%
-% 2> T2 = binary_search_trees:add(T1, 5).
-% {10,{5,nil,nil},nil}
-%
-% 3> T3 = binary_search_trees:add(T2, 15).
-% {10,{5,nil,nil},{15,nil,nil}}
-
-remove(R, Value) ->
-    {todo, R, Value}.
+add({E, Left, Right}, Value) when Value == E ->
+    {E, Left, Right}.
 
 contains(nil, _Value) ->
     false;
@@ -111,35 +98,64 @@ contains({V, Left, _Right}, Value) when Value < V ->
 contains({V, _Left, Right}, Value) when Value > V ->
     contains(Right, Value).
 
-% Example
-% binary_search_trees:contains(T3, 15).
-% true.
-% binary_search_trees:contains(T3, 5).
-% true.
-% binary_search_trees:contains(T3, 10).
-% true.
-% binary_search_trees:contains(T3, 3).
-% false.
-% binary_search_trees:contains(T3, 8).
-% false.
-% binary_search_trees:contains(T3, 200).
-% false.
+remove(nil, _Value) ->
+    nil;
+remove({Value, nil, nil}, Value) ->
+    nil;
+remove({Value, Left, nil}, Value) ->
+    Left;
+remove({Value, nil, Right}, Value) ->
+    Right;
+remove({Value, Left, Right}, Value) ->
+    Min = min(Right),
+    NewRight = remove(Right,Min),
+    {Min, Left, NewRight};
+remove({V, Left, Right}, Value) when Value < V ->
+    {V, remove(Left, Value), Right};
+remove({V, Left, Right}, Value) when Value > V ->
+    {V, Left, remove(Right, Value)}.
+
+min({V, nil, _Right}) ->
+    V;
+min({_V, Left, _Right}) ->
+    min(Left).
+
+max({V, _Left, nil}) ->
+    V;
+max({_V, _Left, Right}) ->
+    max(Right).
+
+toList(nil) ->
+    [];
+toList({Value, Left, Right}) ->
+    toList(Left) ++ [Value] ++ toList(Right).
+
+fromList([]) ->
+    nil;
+fromList([H|T]) ->
+    fromList(T, {H, nil, nil}).
+
+fromList([], Tree) ->
+    Tree;
+fromList([H|T], Tree) ->
+    fromList(T, add(Tree, H)).
 
 
-min(Tree) ->
-    {todo, Tree}.
-
-max(Tree) ->
-    {todo, Tree}.
-
-toList(Tree) ->
-    {todo, Tree}.
-
-fromList(Tree) ->
-    {todo, Tree}.
-
-height(Tree) ->
-    {todo, Tree}.
+height(nil) ->
+    0;
+height({_, Left, Right}) ->
+    1 + max(height(Left), height(Right)).
 
 isBalanced(Tree) ->
-    {todo, Tree}.
+    {Balanced, _Height} = balanced_height(Tree),
+    Balanced.
+
+balanced_height(nil) ->
+    {true, 0};
+balanced_height({_, Left, Right}) ->
+    {LeftBalanced, LeftH} = balanced_height(Left),
+    {RightBalanced, RightH} = balanced_height(Right),
+    Height = 1 + max(LeftH, RightH),
+    Diff = abs(LeftH - RightH),
+    Balanced = LeftBalanced andalso RightBalanced andalso (Diff =< 1),
+    {Balanced, Height}.
