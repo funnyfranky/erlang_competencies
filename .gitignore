@@ -20,3 +20,9 @@ _checkouts/
 rebar.config
 rebar.lock
 *.txt
+
+rbtrees.erl
+.DS_Store
+
+*.gitignore
+*randomAlistsold.erl
