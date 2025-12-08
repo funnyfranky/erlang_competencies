@@ -1,15 +1,15 @@
 -module(monad).
 
 -export([
-    fun_unit/1,
-    fun_bind/2,
+    unit/1,
+    bind/2,
     test/0
 ]).
 
-fun_unit(Value) ->
+unit(Value) ->
     {Value, []}.
 
-fun_bind({Value, Log1}, Fun) ->
+bind({Value, Log1}, Fun) ->
     {NewValue, Log2} = Fun(Value),
     {NewValue, Log1 ++ Log2}.
 
@@ -29,8 +29,8 @@ sub5(X) ->
     {X - 5, ["subtracted 5"]}.
 
 test() ->
-    One = fun_unit(4),
-    Two = fun_bind(One, fun add2/1),  %% {6,  ["added 2"]}
-    Three = fun_bind(Two, fun mul3/1),  %% {18, ["added 2","multiplied by 3"]}
-    Result = fun_bind(Three, fun sub5/1), %% {13, ["added 2","multiplied by 3","subtracted 5"]}
+    One = unit(4),
+    Two = bind(One, fun add2/1),  %% {6,  ["added 2"]}
+    Three = bind(Two, fun mul3/1),  %% {18, ["added 2","multiplied by 3"]}
+    Result = bind(Three, fun sub5/1), %% {13, ["added 2","multiplied by 3","subtracted 5"]}
     Result.
