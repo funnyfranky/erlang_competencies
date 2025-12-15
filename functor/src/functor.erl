@@ -12,7 +12,6 @@ map_tree(Fun, {Value, Left, Right}) ->
 map_tree(Fun, Value) when is_number(Value) ->
     Fun(Value).
 
-% Show it working
 % rebar3 shell
 
 % 1> T = binary_tree:new_node({60,binary_tree:new_node({20,10,binary_tree:new_node({40,70,nil})}),80}).
